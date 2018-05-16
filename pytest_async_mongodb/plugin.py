@@ -10,12 +10,10 @@ import pytest
 import yaml
 from bson import json_util
 
-
 _cache = {}
 
 
 def pytest_addoption(parser):
-
     parser.addini(
         name='async_mongodb_fixtures',
         help='Load these fixtures for tests',
@@ -31,17 +29,16 @@ def pytest_addoption(parser):
         help='Try loading fixtures from this directory')
 
 
-
 def wrapper(func):
     @functools.wraps(func)
     async def wrapped(*args, **kwargs):
         coro_func = asyncio.coroutine(func)
         return await coro_func(*args, **kwargs)
+
     return wrapped
 
 
 class AsyncClassMethod(object):
-
     ASYNC_METHODS = []
 
     def __getattribute__(self, name):
@@ -52,10 +49,9 @@ class AsyncClassMethod(object):
 
 
 class AsyncCollection(AsyncClassMethod, mongomock.Collection):
-
     ASYNC_METHODS = [
         'find_one',
-        'find',
+        # 'find',
         'count',
     ]
 
@@ -76,7 +72,6 @@ class AsyncCollection(AsyncClassMethod, mongomock.Collection):
 
 
 class AsyncDatabase(AsyncClassMethod, mongomock.Database):
-
     ASYNC_METHODS = [
         'collection_names'
     ]
